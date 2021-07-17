@@ -28,7 +28,7 @@
     },
     "scripts": {
         "compile": "tsc",
-        "start": "node ./bin/main"
+        "start": "node ./app/bin/www"
     },
     "private": true
 }
