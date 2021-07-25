@@ -18,7 +18,9 @@
         "mongoose": "^5.9.7",
         "passport": "^0.4.1",
         "passport-http": "^0.3.0",
-        "socket.io": "^2.3.0"
+        "socket.io": "^2.3.0",
+        "luxon": "^1.26.0",
+        "pug": "^3.0.2"
     },
     "devDependencies": {
         "typescript": "^3.8.3",
