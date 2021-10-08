@@ -1,23 +1,11 @@
 import express = require('express');
-import jsonwebtoken = require('jsonwebtoken');
-import * as auth from '../helpers/auth'
+import * as authHelper from '../helpers/auth'
+import * as authController from '../controllers/auth'
 
 var authRouter = express.Router();
-authRouter.get("/login", auth.passport.authenticate('basic', { session: false }), (req, res, next) => {
 
-  var tokendata = {
-    username: req.user["username"],
-    roles: req.user["roles"],
-    email: req.user["email"],
-    id: req.user["id"]
-  };
+authRouter.get("/login", authHelper.passport.authenticate('basic', { session: false }), authController.login);
 
-  console.log(tokendata);
-
-  var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
-  console.log("Login granted. Generating token");
-
-  return res.status(200).json({ error: false, errormessage: "", token: token_signed });
-});
+authRouter.post("/signup", authController.signup);
 
 export { authRouter }
