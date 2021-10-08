@@ -1,25 +1,58 @@
 import * as user from '../models/user'
 
 export function create(req, res, next) {
-  let params = req.body;
+  let params = req.body || {};
+  let password = params.password || "pass";
 
-  let new_user = user.new_user(params.user);
-  new_user.set_password(params.user.params);
+  let new_user = user.new_user(params);
+  new_user.set_password(password);
 
   new_user.save().then(function () {
     return res.status(200).json({ error: false, errormessage: "", user: new_user });
   }).catch(function (error) {
     console.error(error);
-    return res.status(400).json({ error: true, errormessage: "BAD REQUEST" });
+    next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
   });
 }
 
 export function search(req, res, next) {
-  let params = req.body;
+  let params = req.body || {};
 
-  user.get_model().find({}).then((users) => {
+  user.get_model().find(params).then((users) => {
     return res.status(200).json(users);
   }).catch((error) => {
-    next({ statusCode: 404, error: true, errormessage: "DB error: " + error });
+    next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
+  });
+}
+
+export function get(req, res, next) {
+  let params = req.body || {};
+
+  user.get_model().findOne(params).then((user) => {
+    return res.status(200).json(user);
+  }).catch((error) => {
+    next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
+  });
+}
+
+export function update(req, res, next) {
+  let params = req.body || {};
+  let query = params.query || {};
+  let data = params.data || {};
+
+  user.get_model().updateOne(query, data).then((response) => {
+    return res.status(200).json(response);
+  }).catch((error) => {
+    next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
+  });
+}
+
+export function destroy(req, res, next) {
+  let params = req.body || {};
+
+  user.get_model().deleteOne(params).then((response) => {
+    return res.status(200).json(response);
+  }).catch((error) => {
+    next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
   });
 }

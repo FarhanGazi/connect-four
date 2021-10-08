@@ -6,6 +6,12 @@ var userRouter = express.Router();
 
 userRouter.post("/create", authHelper.auth, userController.create);
 
-userRouter.post("/search", userController.search);
+userRouter.post("/search", authHelper.auth, (req, res, next) => { console.log("HOHOHOHO"); next({ statusCode: 403, error: true, errormessage: "FORBIDDEN" });}, userController.search);
+
+userRouter.get("/get", authHelper.auth, userController.get);
+
+userRouter.get("/update", authHelper.auth, userController.update);
+
+userRouter.get("/delete", authHelper.auth, userController.destroy);
 
 export { userRouter }

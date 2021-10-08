@@ -5,9 +5,8 @@ import createError = require('http-errors');
 import bodyparser = require('body-parser');
 import cors = require('cors');
 
-import { nextTick } from 'process';
-
 import { db_connect, mongoose } from '../config/db';
+import { nextTick } from 'process';
 
 import { indexRouter } from './routers/index';
 import { authRouter } from './routers/auth';
@@ -15,9 +14,8 @@ import { userRouter } from './routers/user';
 
 export function create_app() {
   var app = express();
-  //app.set('view engine', 'pug');
-
   var db;
+
   db_connect()
     .then(() => {
       db = mongoose.connection;
@@ -34,7 +32,7 @@ export function create_app() {
 
   app.use('/', indexRouter);
   app.use('/auth', authRouter);
-  app.use('/user', userRouter);
+  app.use('/users', userRouter);
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {

@@ -8,24 +8,23 @@ var auth = jwt({ secret: process.env.JWT_SECRET });
 
 passport.use(new passportHTTP.BasicStrategy(
   function (username, password, done) {
-    console.log("New login attempt from " + username);
     user.get_model().findOne({ email: username }, (err, user) => {
+      console.log(err);
       console.log(user);
-
-      if (user.validate_password(password)) {
-        return done(null, user);
-      }
 
       if (err) {
         return done({ statusCode: 500, error: true, errormessage: err });
       }
 
       if (!user) {
-        return done(null, false, { statusCode: 500, error: true, errormessage: "Invalid user" });
+        return done(null, false, { statusCode: 404, error: true, errormessage: "User not found" });
       }
 
+      if (user.validate_password(password)) {
+        return done(null, user);
+      }
 
-      return done(null, false, { statusCode: 500, error: true, errormessage: "Invalid password" });
+      return done(null, false, { statusCode: 400, error: true, errormessage: "Invalid password" });
     })
   }
 ));
