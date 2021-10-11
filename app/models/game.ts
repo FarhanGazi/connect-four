@@ -6,13 +6,13 @@ var Schema = mongoose.Schema;
 export interface Game extends Document {
   status: string,
   table: any[][],
-  type: string,
+  type: string, // simple, ai
   player1: User,
   player2: User,
   turn: User,
   make_move: (player_id: string, row: number, col: number) => boolean,
   terminate: () => boolean,
-  add_player: (player_id: string) => boolean
+  add_player: (player: User) => boolean
 }
 
 const game_schema = new Schema({
@@ -52,13 +52,25 @@ game_schema.methods = {
     return false;
   },
 
-  add_player: function (player_id: string): boolean {
-    // TODO:
-    // 1) chech if game allows to add user
-    // 2) fetch user from DB
-    // 3) add user to game
-    // return true only if user is added
-    return false;
+  add_player: function (player: User): boolean {
+    if (this.type == 'simple'){
+      if (this.player1 == undefined){
+        this.player1 = player;
+      } else if (this.player2 == undefined){
+        this.player2 = player;
+      } else {
+        return false;
+      }
+    } else if (this.type == 'ai') {
+      if (this.player1 == undefined){
+        this.player1 = player;
+      } else {
+        return false
+      }
+    } else {
+      return false;
+    }
+    return true;
   }
 }
 
