@@ -9,6 +9,7 @@ export interface Game extends Document {
   type: string, // simple, ai
   player1: User,
   player2: User,
+  winner: User,
   turn: User,
   make_move: (player_id: string, row: number, col: number) => boolean,
   terminate: () => boolean,
@@ -46,6 +47,32 @@ game_schema.methods = {
     console.log(this.turn);
     console.log(player);
     return false;
+  },
+
+  __drop: function name(index, index2) {
+    var that = this;
+    if (this.table[index][index2] === 0) {
+      this.table[0][index2] = this.turn;
+      (function dropLoop(i) {
+        setTimeout(function () {
+          if (typeof that.table[i] !== 'undefined' && that.table[i][index2] === 0 && i <= 5) {
+            that.table[i - 1][index2] = 0;
+            that.table[i][index2] = that.turn;
+            dropLoop(i + 1);
+          } else {
+            that.turn = (that.turn == 'r' ? 'y' : 'r');
+            this.status = 'active';
+            this.winner = this.__winDetect();
+            if (this.winner) {
+              this.status = 'ended';
+            }
+            if (this.type == 'ai' && this.status == 'active') {
+              this.__ai();
+            }
+          }
+        }, 50);
+      })(1);
+    }
   },
 
   terminate: function (): boolean {
