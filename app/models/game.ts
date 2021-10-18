@@ -49,7 +49,7 @@ game_schema.methods = {
     return false;
   },
 
-  __drop: function name(index, index2) {
+  __drop: function (index, index2) {
     var that = this;
     if (this.table[index][index2] === 0) {
       this.table[0][index2] = this.turn;
@@ -73,6 +73,34 @@ game_schema.methods = {
         }, 50);
       })(1);
     }
+  },
+
+  __winDetect: function name() {
+    var tempWinner = undefined;
+    //horiz
+    for (var i = 0; i < this.table.length; i++) {
+      var rowMatch = this.table[i].join('').match(/r{4}|y{4}/);
+      if (rowMatch) {
+        rowMatch[0].indexOf("r") > -1 ? tempWinner = "red" : tempWinner = "yellow";
+      }
+    }
+    //vertical
+    var columns = this.__getColumns();
+    for (var j = 0; j < columns.length; j++) {
+      var colMatch = columns[j].join('').match(/r{4}|y{4}/);
+      if (colMatch) {
+        colMatch[0].indexOf("r") > -1 ? tempWinner = "red" : tempWinner = "yellow";
+      }
+    }
+    //diag
+    var diags = this.__getDiags();
+    for (var l = 0; l < diags.length; l++) {
+      var diagMatch = diags[l].join('').match(/r{4}|y{4}/);
+      if (diagMatch) {
+        diagMatch[0].indexOf("r") > -1 ? tempWinner = "red" : tempWinner = "yellow";
+      }
+    }
+    return tempWinner;
   },
 
   terminate: function (): boolean {
