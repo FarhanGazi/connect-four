@@ -103,6 +103,44 @@ game_schema.methods = {
     return tempWinner;
   },
 
+  __getColumns: function () {
+    var columns = [];
+    for (var j = 0; j < this.table[0].length; j++) {
+      var column = [];
+      for (var k = 0; k < this.table.length; k++) {
+        column.push(this.table[k][j]);
+      }
+      columns.push(column);
+    }
+    return columns;
+  },
+
+  __getDiags: function (arr) {
+    if (typeof arr === 'undefined') arr = this.table;
+    var diags = [];
+    for (var i = -5; i < 7; i++) {
+      var group = [];
+      for (var j = 0; j < 6; j++) {
+        if ((i + j) >= 0 && (i + j) < 7) {
+          group.push(arr[j][i + j]);
+        }
+      }
+      diags.push(group);
+    }
+    for (i = 0; i < 12; i++) {
+      var group = [];
+      for (var j = 5; j >= 0; j--) {
+        if ((i - j) >= 0 && (i - j) < 7) {
+          group.push(arr[j][i - j]);
+        }
+      }
+      diags.push(group);
+    }
+    return diags.filter(function (a) {
+      return a.length > 3;
+    });
+  },
+
   terminate: function (): boolean {
     return false;
   },
