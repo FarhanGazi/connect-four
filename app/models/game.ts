@@ -11,7 +11,7 @@ export interface Game extends Document {
   player1: User,
   player2: User,
   winner: any,
-  active: any,
+  active: string,
   dropAllowed: any,
   aiComments: string[],
   make_move: (player_id: string, row: number, col: number) => boolean,
@@ -40,11 +40,14 @@ const game_schema = new Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'User'
   },
+  winner: {
+    type: mongoose.SchemaTypes.String
+  },
   active: {
-    type: mongoose.SchemaTypes.Any
+    type: mongoose.SchemaTypes.String
   },
   dropAllowed: {
-    type: mongoose.SchemaTypes.Any
+    type: mongoose.SchemaTypes.Boolean
   },
   aiComments: {
     type: [mongoose.SchemaTypes.String]
@@ -325,7 +328,8 @@ export function new_game(data: {type: String}) {
     status: 'created',
     table: table,
     type: data.type,
-    active: 'r'
+    active: 'r',
+
   });
 
   return game;
