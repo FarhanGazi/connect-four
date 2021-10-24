@@ -1,4 +1,3 @@
-import { join } from "path";
 import { mongoose } from "../../config/db";
 import { User } from "./user";
 
@@ -10,7 +9,8 @@ export interface Game extends Document {
   type: string, // simple, ai
   player1: User,
   player2: User,
-  winner: any,
+  current_player: string,
+  winner: string,
   active: string,
   dropAllowed: any,
   aiComments: string[],
@@ -40,6 +40,9 @@ const game_schema = new Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'User'
   },
+  current_player: {
+    type: mongoose.SchemaTypes.String
+  },
   winner: {
     type: mongoose.SchemaTypes.String
   },
@@ -56,33 +59,38 @@ const game_schema = new Schema({
 
 game_schema.methods = {
   make_move: function (player_id: string, row: number, col: number): boolean {
-    console.log(this.turn);
-    console.log(player_id);
-    return false;
+    if (this.current_player == player_id){
+      try {
+        this.__drop(row, col);
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    }
   },
 
   __drop: function (index, index2) {
     var that = this;
-    if (this.table[index][index2] === 0) {
-      this.table[0][index2] = this.turn;
+    if (this.table[index][index2] === 0 && this.status != 'ended') {
+      this.table[0][index2] = this.active;
       (function dropLoop(i) {
-        setTimeout(function () {
-          if (typeof that.table[i] !== 'undefined' && that.table[i][index2] === 0 && i <= 5) {
-            that.table[i - 1][index2] = 0;
-            that.table[i][index2] = that.turn;
-            dropLoop(i + 1);
-          } else {
-            that.turn = (that.turn == 'r' ? 'y' : 'r');
-            this.status = 'active';
-            this.winner = this.__winDetect();
-            if (this.winner) {
-              this.status = 'ended';
-            }
-            if (this.type == 'ai' && this.status == 'active') {
-              this.__ai();
-            }
+        if (typeof that.table[i] !== 'undefined' && that.table[i][index2] === 0 && i <= 5) {
+          that.table[i - 1][index2] = 0;
+          that.table[i][index2] = that.active;
+          dropLoop(i + 1);
+        } else {
+          that.active = (that.active == 'r' ? 'y' : 'r');
+          that.status = 'active';
+          that.winner = that.__winDetect();
+          if (that.winner) {
+            that.winner = this.current_player;
+            that.status = 'ended';
           }
-        }, 50);
+          if (that.type == 'ai' && that.status == 'active') {
+            that.__ai();
+          }
+        }
       })(1);
     }
   },
@@ -285,6 +293,7 @@ game_schema.methods = {
     if (this.type == 'simple'){
       if (this.player1 == undefined){
         this.player1 = player;
+        this.current_player = this.player1._id;
       } else if (this.player2 == undefined){
         this.player2 = player;
       } else {
@@ -329,7 +338,6 @@ export function new_game(data: {type: String}) {
     table: table,
     type: data.type,
     active: 'r',
-
   });
 
   return game;
