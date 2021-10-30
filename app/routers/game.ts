@@ -11,5 +11,6 @@ gameRouter.post("/update", authHelper.auth, gameController.update);
 gameRouter.post("/terminate", authHelper.auth, gameController.terminate);
 gameRouter.post("/make_move", authHelper.auth, gameController.make_move);
 gameRouter.post("/add_player", authHelper.auth, gameController.add_player);
+gameRouter.post("/add_me", authHelper.auth, gameController.add_me);
 
 export { gameRouter }

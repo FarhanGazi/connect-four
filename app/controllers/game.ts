@@ -2,7 +2,7 @@ import * as Game from '../models/game'
 import * as User from '../models/user'
 
 export function create(req, res, next) {
-  let new_game = Game.new_game(req.body);
+  let new_game = Game.new_game();
 
   new_game.save().then((response) => {
     return res.status(200).json({ error: false, errormessage: "", game: new_game, response: response });
@@ -62,7 +62,6 @@ export function add_player(req, res, next) {
   let game_id      = params.game_id;
   let player_email = params.player_email;
 
-  console.log(params);
   User.get_model().findOne({ email: player_email })
     .then((u) => {
       return u;
@@ -86,6 +85,10 @@ export function add_player(req, res, next) {
     }).catch((error) => {
       next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
     });
+}
+
+export function add_me(req, res, next) {
+  let user = req.user;
 }
 
 export function make_move(req, res, next) {
