@@ -5,10 +5,12 @@
  */
 
 var connect_four = require('../../ts-built/app/app');
+var socket_app = require('../../ts-built/app/helpers/socket');
 app = connect_four.create_app();
 
 var debug = require('debug')('connect-four:server');
 var http = require('http');
+var io = require('socket.io');
 
 /**
  * Get port from environment and store in Express.
@@ -22,6 +24,9 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+ios = io(server);
+socket_app.setWebSocketServer(ios);
 
 /**
  * Listen on provided port, on all network interfaces.

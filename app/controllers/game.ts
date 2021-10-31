@@ -89,6 +89,31 @@ export function add_player(req, res, next) {
 
 export function add_me(req, res, next) {
   let user = req.user;
+  let game_id = req.body.game_id;
+
+  User.get_model().findOne({ email: user.email })
+    .then((u) => {
+      return u;
+    })
+    .then((u) => {
+      if (u) {
+        Game.get_model().findOne({ _id: game_id }).then((game) => {
+          if (game.add_player(u)) {
+            game.save().then((response) => {
+              return res.status(200).json({ response: response, game: game });
+            }).catch((error) => {
+              next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
+            })
+          } else {
+            next({ statusCode: 400, error: true, errormessage: "BAD Request: failed to add player to game!" });
+          }
+        })
+      } else {
+        next({ statusCode: 404, error: true, errormessage: "NOT FOUND: player not found!" });
+      }
+    }).catch((error) => {
+      next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
+    });
 }
 
 export function make_move(req, res, next) {

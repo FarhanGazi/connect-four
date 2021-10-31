@@ -151,7 +151,7 @@ game_schema.methods = {
     return true;
   },
 
-  add_player: function (player: User): boolean {
+  add_player: function (player: any): boolean {
     if (this.player1 == undefined){
       this.player1 = player;
       this.current_player = this.player1._id;
