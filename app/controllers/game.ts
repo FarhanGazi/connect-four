@@ -1,6 +1,8 @@
 import * as Game from '../models/game'
 import * as User from '../models/user'
 
+import { ios } from '../helpers/socket'
+
 export function create(req, res, next) {
   let new_game = Game.new_game();
 
@@ -48,6 +50,10 @@ export function terminate(req, res, next) {
 
   Game.get_model().findOne(params).then((game) => {
     if (game.terminate()) {
+      if (ios) {
+        // Emit game events on its channel
+        ios.emit(`${game._id}`, game);
+      }
       return res.status(200).json(game);
     } else {
       next({ statusCode: 400, error: true, errormessage: "BAD Request" });
@@ -71,6 +77,10 @@ export function add_player(req, res, next) {
         Game.get_model().findOne({ _id: game_id }).then((game) => {
           if (game.add_player(u)) {
             game.save().then((response) => {
+              if (ios) {
+                // Emit game events on its channel
+                ios.emit(`${game._id}`, game);
+              }
               return res.status(200).json({ response: response, game: game });
             }).catch((error) => {
               next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
@@ -100,6 +110,10 @@ export function add_me(req, res, next) {
         Game.get_model().findOne({ _id: game_id }).then((game) => {
           if (game.add_player(u)) {
             game.save().then((response) => {
+              if (ios) {
+                // Emit game events on its channel
+                ios.emit(`${game._id}`, game);
+              }
               return res.status(200).json({ response: response, game: game });
             }).catch((error) => {
               next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
@@ -125,6 +139,10 @@ export function make_move(req, res, next) {
     if (game) {
       if (game.make_move(params.player_id, params.row, params.col)) {
         Game.get_model().updateOne({ _id: game_id }, game ).then((response)=>{
+          if (ios) {
+            // Emit game events on its channel
+            ios.emit(`${game._id}`, game);
+          }
           console.log(game.table);
           return res.status(200).json(response);
         }).catch((error)=>{
