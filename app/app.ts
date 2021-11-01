@@ -12,6 +12,7 @@ import { indexRouter } from './routers/index';
 import { authRouter } from './routers/auth';
 import { userRouter } from './routers/user';
 import { gameRouter } from './routers/game';
+import { messageRouter } from './routers/message';
 
 export function create_app() {
   var app = express();
@@ -35,6 +36,7 @@ export function create_app() {
   app.use('/auth', authRouter);
   app.use('/users', userRouter);
   app.use('/games', gameRouter);
+  app.use('/messages', messageRouter);
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {

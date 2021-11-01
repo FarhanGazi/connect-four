@@ -7,27 +7,43 @@ export interface Message extends Document {
   sender: User,
   receiver: User,
   message: string,
-  created_at: Date,
-  updated_at: Date
+  timestamp: Date
 }
 
 const message_schema = new Schema({
   sender: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   receiver: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   message: {
     type: mongoose.SchemaTypes.String,
     required: true
   },
-  created_at: {
-    type: mongoose.SchemaTypes.Date
-  },
-  updated_at: {
-    type: mongoose.SchemaTypes.Date
+  timestamp: {
+    type: mongoose.SchemaTypes.Date,
+    required: true
   }
 })
+
+export function get_schema() { return message_schema; }
+
+var messageModel;
+export function get_model() {
+  if (!messageModel) {
+    messageModel = mongoose.model('Message', get_schema());
+  }
+  return messageModel;
+}
+
+export function new_message(data: { sender: User, receiver: User, message: string, timestamp: Date }) {
+  var _messagemodel = get_model();
+  var message = new _messagemodel(data);
+
+  return message;
+}
