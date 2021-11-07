@@ -1,10 +1,13 @@
 import express = require('express');
+import { upload } from '../../config/multer';
 import * as authHelper from '../helpers/auth'
 import * as userController from '../controllers/user'
 
 var userRouter = express.Router();
 
 userRouter.post("/create", authHelper.auth, userController.create);
+
+userRouter.post("/upload_image", authHelper.auth, upload.single('image'), userController.uploadImage);
 
 userRouter.post("/search", authHelper.auth, (req, res, next) => { console.log("HOHOHOHO"); next({ statusCode: 403, error: true, errormessage: "FORBIDDEN" });}, userController.search);
 

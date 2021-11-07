@@ -9,6 +9,7 @@ export interface User extends Document {
     roles: string[],
     salt: string,
     digest: string,
+    img: any,
     set_password: (password: string) => void,
     validate_password: (password: string) => boolean,
     is_admin: () => boolean,
@@ -36,6 +37,10 @@ const user_schema = new Schema({
     digest: {
         type: mongoose.SchemaTypes.String,
         required: false
+    },
+    img: {
+        data: Buffer,
+        contentType: String
     }
 });
 

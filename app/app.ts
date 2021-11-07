@@ -2,7 +2,7 @@ import express = require('express');
 import logger = require('morgan');
 import cookieParser = require('cookie-parser');
 import createError = require('http-errors');
-import bodyparser = require('body-parser');
+import bodyParser = require('body-parser');
 import cors = require('cors');
 
 import { db_connect, mongoose } from '../config/db';
@@ -31,6 +31,11 @@ export function create_app() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
+
+  // Set EJS as templating engine
+  app.set("view engine", "ejs");
 
   app.use('/', indexRouter);
   app.use('/auth', authRouter);
