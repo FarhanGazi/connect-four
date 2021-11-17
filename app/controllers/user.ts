@@ -27,13 +27,13 @@ export function uploadImage(req, res, next) {
   let file = req.file;
   let query = params.query;
 
-  user.get_model().findOne({ _id: id }).then((user) => {
-    user["img"] = {
-      data: fs.readFileSync(path.join(__dirname + '/uploads/' + file.filename)),
+  user.get_model().findOne({ _id: id }).then((u) => {
+    u["img"] = {
+      data: fs.readFileSync(file.path),
       contentType: 'image/png'
     };
-    console.log(user);
-    user.get_model().undateOne(query, user).then((response) => {
+    console.log(u);
+    user.get_model().updateOne({ _id: id }, u).then((response) => {
       return res.status(200).json(response);
     }).catch((error) => {
       next({ statusCode: 500, error: true, errormessage: "DB error: " + error });
