@@ -6,4 +6,4 @@ node_modules
 
 ts-built
 
-tmp/uploads/*
+tmp/uploads/image-*
