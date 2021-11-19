@@ -29,4 +29,22 @@ passport.use(new passportHTTP.BasicStrategy(
   }
 ));
 
-export { auth, passport }
+var isAdmin = function (req, res, next) {
+  let user = req.user;
+  if(user && user.roles.indexOf('admin') >= 0){
+    next();
+  } else {
+    next({ statusCode: 403, error: true, errormessage: "FORBIDDEN" });
+  }
+}
+
+var isPlayer = function(req, res, next) {
+  let user = req.user;
+  if (user && user.roles.indexOf('player') >= 0) {
+    next();
+  } else {
+    next({ statusCode: 403, error: true, errormessage: "FORBIDDEN" });
+  }
+}
+
+export { auth, passport, isAdmin, isPlayer }
